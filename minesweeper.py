@@ -333,20 +333,25 @@ def main(difficulty=3, width=32, height=16):
     start_loop(minesweeper, map_cell_state_to_renderable, map_key_to_command)
 
 
-def usage(error):
-    print 'Usage:\n\t%s [difficulty [width [height]]] [-h] [-d]\n%s' % (sys.argv[0], error)
+def usage():
+    print 'Usage:\n\t%s [difficulty [width [height]]] [-h] [-d]' % sys.argv[0]
 
 
 if __name__ == '__main__':
     debug = '-d' in sys.argv
+    help = '-h' in sys.argv
+
     if debug:
         sys.argv.remove('-d')
-    try:
-        if len(sys.argv) == 1:
-            main()
-        elif '-h' not in sys.argv:
+
+    if help:
+        usage()
+    else:
+        try:
             main(*map(int, sys.argv[1:]))
-    except Exception as e:
-        usage(e)
-        if debug:
-            raise
+        except Exception as e:
+            usage()
+            if debug:
+                raise
+            else:
+                print e
