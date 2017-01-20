@@ -113,21 +113,21 @@ class MineSweeper(object):
 
             if command.pos in self._board._mines:
                 self._num_mines_flagged += 1
-
-            if self._all_mines_found():
-                self._end(True)
         else:
-            self._board[self._cursor_pos[1]][self._cursor_pos[0]] = self._board.HIDDEN
+            self._board.set(*self._cursor_pos, value=self._board.HIDDEN)
             self._num_flags -= 1
 
             if command.pos in self._board._mines:
                 self._num_mines_flagged -= 1
 
+        if self._all_mines_found():
+            self._end(True)
+
         self.title = Strings.TITLE + Strings.FLAG_COUNT % (self._num_flags, self._board.num_mines)
 
     def _all_mines_found(self):
         all_flagged = self._num_mines_flagged == self._board._num_mines
-        no_empty_flagged = self._num_mines_flagged <= self.board.num_mines
+        no_empty_flagged = self._num_flags <= self.board.num_mines
         return all_flagged and no_empty_flagged
 
 
