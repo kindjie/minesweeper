@@ -2,7 +2,8 @@ from unittest import TestCase
 
 import game
 from minesweeper import (MineSweeper, BoardState, Command, map_cell_state_to_renderable,
-                         map_key_to_command, CmdType, CmdKey, Strings)
+                         CmdType, Strings)
+from minesweeper_cli import map_key_to_command, CmdKey
 
 
 def assert_attributes_equal(test_case, obj_a, obj_b, attributes):
@@ -19,7 +20,9 @@ class TestMineSweeper(TestCase):
 
     @staticmethod
     def _create_default_game():
-        return MineSweeper(4, 4, 1)
+        ms = MineSweeper(4, 4, 1)
+        ms.board.create_mines()
+        return ms
 
     def _create_arbitrary_game(self):
         ms = self._create_default_game()
@@ -58,9 +61,9 @@ class TestMineSweeper(TestCase):
         arbitrary_game.reset()
         assert_attributes_equal(self, self.ms, arbitrary_game, self.VALIDATE_ATTR)
 
-    def test_update_down_command_before_start_starts_game(self):
+    def test_update_down_command_before_start_does_not_start_game(self):
         self.ms.update(Command(CmdType.DOWN, 0, 0))
-        self.assertEquals(((0, 0), game.State.ACTIVE),
+        self.assertEquals(((0, 1), game.State.STARTING),
                           (self.ms.cursor_pos, self.ms.game_state.state))
 
     def test_update_start_and_down_command_moves_cursor_down(self):
@@ -87,7 +90,10 @@ class TestMineSweeper(TestCase):
 class TestBoardState(TestCase):
     @staticmethod
     def _create_boardstate(height=4, width=4, density=0.125):
-        return BoardState(height, width, density)
+        bs = BoardState(height, width, density)
+        bs.reset()
+        bs.create_mines()
+        return bs
 
     def test_reset_arbitrary_board_returns_all_hidden(self):
         bs = self._create_boardstate()

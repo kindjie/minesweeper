@@ -1,15 +1,11 @@
-#!/usr/bin/env python
 # coding=utf-8
 import itertools
-import sys
 import time
 from collections import deque
 from collections import namedtuple
-from curses import KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 from random import sample
 
 from game import State, BoardGameState
-from renderer import start_loop
 
 
 class MineSweeper(object):
@@ -21,7 +17,25 @@ class MineSweeper(object):
             raise ValueError('Invalid difficulty: 0 <= [%s] <= %s' % (difficulty, max_difficulty))
 
         self._board = BoardState(height, width, self.DIFFICULTY_STEP * difficulty)
+        self._num_victories = 0
+        self._num_defeats = 0
         self.reset()
+
+    @property
+    def num_victories(self):
+        return self._num_victories
+
+    @property
+    def num_defeats(self):
+        return self._num_defeats
+
+    @property
+    def num_games(self):
+        return self.num_defeats + self.num_victories
+
+    @property
+    def fraction_wins(self):
+        return float(self.num_victories) / float(self.num_games) if self.num_games > 0 else 0.0
 
     @property
     def cursor_pos(self):
@@ -39,6 +53,10 @@ class MineSweeper(object):
     def game_state(self):
         return BoardGameState(self.board, self.cursor_pos, self._state)
 
+    @property
+    def num_flags(self):
+        return self._num_flags
+
     def reset(self):
         self.title = Strings.TITLE
         self.footer = Strings.FOOTER
@@ -51,8 +69,8 @@ class MineSweeper(object):
         self._board.reset()
 
     def update(self, command):
-        if self._state & State.STARTING:
-            self._start()
+        if self._state & State.STARTING and not command.type & CmdType.MOVE:
+            self._start(command.pos)
             return
 
         if command is None or command.type == CmdType.NONE or self.game_over:
@@ -62,16 +80,19 @@ class MineSweeper(object):
         self._handle_reveal(command)
         self._handle_toggle_flag(command)
 
-    def _start(self):
+    def _start(self, pos=None):
         self._state = State.ACTIVE
         self._start_time = time.time()
+        self._board.create_mines(pos)
 
     def _end(self, is_victory):
         if is_victory:
+            self._num_victories += 1
             self._state = State.VICTORY
             self.message = Strings.VICTORY
         else:
             self._board.reveal_mines()
+            self._num_defeats += 1
             self._state = State.DEFEAT
             self.message = Strings.DEFEAT
 
@@ -103,6 +124,9 @@ class MineSweeper(object):
         else:
             self._board.reveal_from(*self.cursor_pos)
 
+        if self.board.num_hidden == self.board.num_mines:
+            self._end(True)
+
     def _handle_toggle_flag(self, command):
         if not command.type & CmdType.TOGGLE_FLAG:
             return
@@ -119,9 +143,6 @@ class MineSweeper(object):
 
             if command.pos in self._board._mines:
                 self._num_mines_flagged -= 1
-
-        if self._all_mines_found():
-            self._end(True)
 
         self.title = Strings.TITLE + Strings.FLAG_COUNT % (self._num_flags, self._board.num_mines)
 
@@ -150,12 +171,12 @@ class BoardState(object):
 
         self._width = width
         self._height = height
-        max_possible_mines = (self._width * self._height) - 1
-        self._num_mines = max(1, int(max_possible_mines * density))  # At least 1 mine.
+        self._num_mines = max(1, int((width * height - 1) * density))  # At least 1 mine.
         self.reset()
 
     def reset(self):
-        self._mines = set(self._create_mines())
+        self._mines = None
+        self._num_hidden = self.width * self.height
         self._rows = [[self.HIDDEN for _ in xrange(self._width)] for _ in xrange(self._height)]
 
     @property
@@ -170,6 +191,10 @@ class BoardState(object):
     def num_mines(self):
         return self._num_mines
 
+    @property
+    def num_hidden(self):
+        return self._num_hidden
+
     def is_in_bounds(self, x, y):
         return 0 <= x < self._width and 0 <= y < self._height
 
@@ -182,8 +207,13 @@ class BoardState(object):
         to_visit = deque()
         to_visit.append((x, y))
 
+        def should_visit(x, y):
+            return self.is_in_bounds(x, y) and \
+                   (x, y) not in visited and \
+                   self.get(x, y) & (self.HIDDEN | self.FLAG)
+
         def fill(x, y):
-            if not self.is_in_bounds(x, y) or (x, y) in visited:
+            if not should_visit(x, y):
                 return
 
             visited.add((x, y))
@@ -199,6 +229,8 @@ class BoardState(object):
         while len(to_visit) > 0:
             fill(*to_visit.pop())
 
+        self._num_hidden -= len(visited)
+
     def set(self, x, y, value):
         if self.is_in_bounds(x, y):
             self._rows[y][x] = value
@@ -213,9 +245,11 @@ class BoardState(object):
     def _adjacent_pos(self, x, y):
         return set(itertools.product([x - 1, x, x + 1], [y - 1, y, y + 1]))
 
-    def _create_mines(self):
-        return sample(list(itertools.product(xrange(self._width), xrange(self._height))),
-                      self._num_mines)
+    def create_mines(self, exclude_pos=None):
+        possible_positions = list(itertools.product(xrange(self._width), xrange(self._height)))
+        if exclude_pos is not None:
+            possible_positions.remove(exclude_pos)
+        self._mines = sample(possible_positions, self._num_mines)
 
     def _count_adjacent_mines(self, x, y):
         return len(self._adjacent_pos(x, y).intersection(self._mines))
@@ -261,34 +295,6 @@ class CmdType(object):
     MOVE = LEFT | RIGHT | UP | DOWN
 
 
-class CmdKey(object):
-    MOVEMENT_KEYS = {
-        KEY_DOWN: CmdType.DOWN,
-        KEY_LEFT: CmdType.LEFT,
-        KEY_RIGHT: CmdType.RIGHT,
-        KEY_UP: CmdType.UP
-    }
-    REVEAL_KEY = ord(' ')
-    TOGGLE_FLAG_KEY = ord('f')
-    QUIT_KEY = ord('q')
-
-
-def map_key_to_command(key_code, x, y):
-    if key_code == CmdKey.QUIT_KEY:
-        raise StopIteration()
-
-    if key_code in CmdKey.MOVEMENT_KEYS:
-        return Command(CmdKey.MOVEMENT_KEYS[key_code], x, y)
-
-    elif key_code == CmdKey.REVEAL_KEY:
-        return Command(CmdType.REVEAL, x, y)
-
-    elif key_code == CmdKey.TOGGLE_FLAG_KEY:
-        return Command(CmdType.TOGGLE_FLAG, x, y)
-
-    return Command(CmdType.NONE, x, y)
-
-
 def map_cell_state_to_renderable(cell):
     if cell == BoardState.HIDDEN:
         return Strings.HIDDEN_CELL
@@ -325,33 +331,3 @@ class Strings(object):
     FLAG_CELL = u'[bold]†'
     EMPTY_CELL = u' '
     INVALID_CELL = u'?'
-
-
-# Commandline
-def main(difficulty=3, width=32, height=16):
-    minesweeper = MineSweeper(width, height, difficulty)
-    start_loop(minesweeper, map_cell_state_to_renderable, map_key_to_command)
-
-
-def usage():
-    print 'Usage:\n\t%s [difficulty [width [height]]] [-h] [-d]' % sys.argv[0]
-
-
-if __name__ == '__main__':
-    debug = '-d' in sys.argv
-    help = '-h' in sys.argv
-
-    if debug:
-        sys.argv.remove('-d')
-
-    if help:
-        usage()
-    else:
-        try:
-            main(*map(int, sys.argv[1:]))
-        except Exception as e:
-            usage()
-            if debug:
-                raise
-            else:
-                print e

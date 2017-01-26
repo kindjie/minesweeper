@@ -63,11 +63,13 @@ class GameBoardRenderer(object):
                                cursor_pos[0] + self.BORDER_WIDTH)
         self._render_labels()
         self._render_game_over(game_state)
+        self._game_window.refresh()
 
     def _render_game_over(self, game_state):
         if game_state & State.GAME_OVER:
             curses.curs_set(0)
-            curses.flash()
+            if game_state & State.DEFEAT:
+                curses.flash()
         else:
             curses.curs_set(2)
 
@@ -154,11 +156,12 @@ class GameBoardInputHandler(object):
                               self.prev_cursor_coord[0] - GameBoardRenderer.BORDER_WIDTH)
 
 
-def start_loop(game, map_cell_to_renderable, map_key_to_command):
+def start_loop(game, map_cell_to_renderable, map_key_to_command, ai):
     with Window(game.board.height + 2 * GameBoardRenderer.BORDER_WIDTH,
                 game.board.width + 2 * GameBoardRenderer.BORDER_WIDTH) as game_window:
         game_renderer = GameBoardRenderer(game_window)
-        game_input_handler = GameBoardInputHandler(game_window, map_key_to_command)
+        game_input_handler = GameBoardInputHandler(game_window, map_key_to_command) if ai is None \
+                             else ai
 
         game_renderer._put_center(game.title)
 
