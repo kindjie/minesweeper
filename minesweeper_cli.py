@@ -47,7 +47,11 @@ def main(difficulty=3, width=32, height=16, auto=False):
 
 
 def usage():
-    print 'Usage:\n\t%s [difficulty [width [height]]] [-h] [-d]' % sys.argv[0]
+    print 'Usage:\n\t%s [difficulty [width [height]]] [-h] [-d] [-a]\n' % sys.argv[0]
+    print 'Options:'
+    print '\t-h\t\tHelp\tDisplays this help message.'
+    print '\t-d\t\tDebug\tDisplays complete call stacks on errors.'
+    print '\t-a\t\tAuto\tEnables AI player.'
 
 
 if __name__ == '__main__':
