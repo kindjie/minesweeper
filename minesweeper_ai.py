@@ -6,7 +6,12 @@ from minesweeper import Command, CmdType, BoardState
 
 class MineSweeperAI(object):
     NUM_GAMES = 20
-    THINK_DELAY = 0.1   # Seconds
+    THINK_DELAY = 0.1       # Seconds
+    GAME_OVER_DELAY = 1.0   # Seconds
+
+    _MIN_RISK = 0.0
+    _MAX_RISK = 1.0
+    _NUM_NEIGHBOURS = 8
 
     CellRisk = namedtuple('CellRisk', ['risk', 'x', 'y'])
 
@@ -20,39 +25,38 @@ class MineSweeperAI(object):
     def next(self):
         self._clear_cache()
         time.sleep(self.THINK_DELAY)
-        self._game.footer = ''
 
         if self._game.game_over:
-            time.sleep(self.THINK_DELAY)
-            if self._game.num_games >= self.NUM_GAMES:
-                raise StopIteration()
-            else:
-                return Command(CmdType.NONE, 0, 0)
+            return self._handle_game_over()
 
-        hidden_cells = [(x, y) for x, y, state in self._game.board if state == BoardState.HIDDEN]
-        risks = sorted(self._moves(hidden_cells), key=lambda r: r.risk)
-        best_reveal = risks[0]
-        best_flag = risks[-1]
-        if best_flag.risk >= 1.0:
-            return Command(CmdType.TOGGLE_FLAG, best_flag.x, best_flag.y)
+        best_flag_move, best_reveal_move = self._find_best_moves()
+        if best_flag_move.risk >= self._MAX_RISK:
+            return Command(CmdType.TOGGLE_FLAG, best_flag_move.x, best_flag_move.y)
         else:
-            if best_reveal.risk > 0.0:
-                self._game.footer = 'GUESS: %s' % best_reveal.risk
-            return Command(CmdType.REVEAL, best_reveal.x, best_reveal.y)
+            # Might need to guess if we aren't certain about a flag.
+            return Command(CmdType.REVEAL, best_reveal_move.x, best_reveal_move.y)
 
     def _moves(self, cells):
         for x, y in cells:
             risk = self._calc_risk(x, y)
             yield risk
-            if risk == 0.0 or risk == 1.0:
+            if risk == self._MIN_RISK or risk == self._MAX_RISK:
+                # Found candidate move, so we can stop.
                 return
+
+    def _find_best_moves(self):
+        hidden_cells = [(x, y) for x, y, state in self._game.board if state == BoardState.HIDDEN]
+        risks = sorted(self._moves(hidden_cells), key=lambda r: r.risk)
+        best_reveal = risks[0]
+        best_flag = risks[-1]
+        return best_flag, best_reveal
 
     def _calc_risk(self, x, y):
         if self._is_definite_safe(x, y):
-            return self.CellRisk(0, x, y)
+            return self.CellRisk(self._MIN_RISK, x, y)
 
         if self._is_definite_mine(x, y):
-            return self.CellRisk(1.0, x, y)
+            return self.CellRisk(self._MAX_RISK, x, y)
 
         general_prob = float(self._game.board.num_mines - self._game.num_flags) / \
                        float(self._game.board.num_hidden - self._game.num_flags)
@@ -62,8 +66,8 @@ class MineSweeperAI(object):
             if val is None:
                 # Prefer edges since they have a better chance of revealing more cells.
                 return general_prob / 2.0
-            if val > 8:
-                # No extra information.
+            if val > self._NUM_NEIGHBOURS:
+                # No extra information from this cell.
                 return general_prob
 
             # Use number of expected versus found mines to estimate likelihood.
@@ -74,8 +78,14 @@ class MineSweeperAI(object):
         # Calculating actual probability takes exponential time.
         # Let's average probabilities to get a rough estimate of risk.
         probabilities = [prob_mine(ax, ay) for ax, ay in self._game.board._adjacent_pos(x, y)]
-        probabilities = [p for p in probabilities if p is not None]
         return self.CellRisk(sum(probabilities) / len(probabilities), x, y)
+
+    def _handle_game_over(self):
+        time.sleep(self.GAME_OVER_DELAY)
+        if self._game.num_games >= self.NUM_GAMES:
+            raise StopIteration()
+        else:
+            return Command(CmdType.NONE, 0, 0)
 
     def _count_neighbours_state(self, x, y, state):
         if not self._in_cache('count', (x, y, state)):
@@ -101,7 +111,8 @@ class MineSweeperAI(object):
             if state is None:
                 continue
 
-            if state <= 8 and num_hidden_neighbours_of_n <= state - num_flagged_neighbours_of_n:
+            if state <= self._NUM_NEIGHBOURS and num_hidden_neighbours_of_n <= \
+                                                 state - num_flagged_neighbours_of_n:
                 return True
         return False
 
