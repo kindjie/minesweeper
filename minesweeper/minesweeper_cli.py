@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 from _curses import KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP
 
@@ -57,21 +58,32 @@ def main(difficulty=3, width=32, height=16, auto=False):
 
 
 def usage():
-    print('Usage:')
-    print('    %s [difficulty [width [height]]] [-h] [-d] [-a]\n' % sys.argv[0])
-    print('     difficulty   Integer between 0 and 40 inclusive.')
-    print('     width        Integer greater than 1.')
-    print('     height       Integer greater than 1.\n')
-    print('Options:')
-    print('    -h Help       Displays this help message.')
-    print('    -d Debug      Displays complete call stacks on errors.')
-    print('    -a Auto       Enables AI player.\n')
-    print('In game:')
-    print('     Use the arrow keys or [hjkl] to move.')
-    print('     Press [f] to flag a mine under cursor.')
-    print('     Press [space] to reveal from under the cursor.')
-    print('     Press [q] to quit the game.\n')
-    print('There are no commands when AI player is enabled.')
+    caller = os.path.basename(sys.argv[0])
+    print(  'Usage:\n'
+            '     %s [difficulty [width [height]]] [-h] [-d] [-a]\n'
+            '\n'
+            '     difficulty   Integer between 0 and 40 inclusive.\n'
+            '     width        Integer greater than 1.\n'
+            '     height       Integer greater than 1.\n'
+            '\n'
+            'Options:\n'
+            '    -h Help       Displays this help message.\n'
+            '    -d Debug      Displays complete call stacks on errors.\n'
+            '    -a Auto       Enables AI player to play 20 boards.\n'
+            '\n'
+            'In game:\n'
+            '     Use the arrow keys or [hjkl] to move.\n'
+            '     Press [f] to flag a mine under cursor.\n'
+            '     Press [space] to reveal from under the cursor.\n'
+            '     Press [q] to quit the game.\n'
+            '\n'
+            'There are no commands when AI player is enabled.\n'
+            '\n'
+            'Example:\n'
+            '     > pmine 3 32 16 -a\n'
+            '\n'
+            '     This will have the AI player attempt 32x16 boards moderately packed\n'
+            '     with mines.' % caller)
 
 
 def start():

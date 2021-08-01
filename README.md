@@ -1,7 +1,9 @@
-# minesweeper
+# pmine
 Example code in Python 2.7+ / Python 3.6+ using only the standard library.
-This a terminal app that requires support for UTF-8 and curses. Entry point
-is in minesweeper_cli.py. Use the `-h` option to print help.
+
+This is a terminal app that is installed as pmine. It requires support for
+UTF-8 and curses. Entry point is in minesweeper_cli.py. Use the `-h` option
+to print help.
 
 ```
 Usage: minesweeper_cli [difficulty [width [height]]] [-h] [-d] [-a]
@@ -13,7 +15,7 @@ Usage: minesweeper_cli [difficulty [width [height]]] [-h] [-d] [-a]
 Options:
   -h  HelpDisplays this help message.
   -d  DebugDisplays complete call stacks on errors.
-  -a  AutoEnables AI player.
+  -a  AutoEnables AI player to play 20 boards.
 
 In game:
   Use the arrow keys or [hjkl] to move.
@@ -24,9 +26,9 @@ In game:
 There are no commands when AI player is enabled.
 
 Example:
-> pmine 35 50 50 -a
+> pmine 3 32 16 -a
 
-  This will have the AI player attempt a 50x50 board densely packed
+  This will have the AI player attempt 32x16 boards moderately packed
   with mines.
 ```
 
