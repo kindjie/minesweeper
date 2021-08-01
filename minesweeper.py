@@ -177,7 +177,7 @@ class BoardState(object):
     def reset(self):
         self._mines = None
         self._num_hidden = self.width * self.height
-        self._rows = [[self.HIDDEN for _ in xrange(self._width)] for _ in xrange(self._height)]
+        self._rows = [[self.HIDDEN for _ in range(self._width)] for _ in range(self._height)]
 
     @property
     def width(self):
@@ -246,7 +246,7 @@ class BoardState(object):
         return set(itertools.product([x - 1, x, x + 1], [y - 1, y, y + 1]))
 
     def create_mines(self, exclude_pos=None):
-        possible_positions = list(itertools.product(xrange(self._width), xrange(self._height)))
+        possible_positions = list(itertools.product(range(self._width), range(self._height)))
         if exclude_pos is not None:
             possible_positions.remove(exclude_pos)
         self._mines = sample(possible_positions, self._num_mines)
@@ -256,8 +256,8 @@ class BoardState(object):
 
     def __iter__(self):
         return (self.Cell(x, y, self._rows[y][x])
-                for y in xrange(len(self._rows))
-                for x in xrange(len(self._rows[0])))
+                for y in range(len(self._rows))
+                for x in range(len(self._rows[0])))
 
     def __getitem__(self, row):
         return self._rows[row]

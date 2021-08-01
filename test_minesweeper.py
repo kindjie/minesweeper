@@ -84,7 +84,8 @@ class TestMineSweeper(TestCase):
     def test_update_start_and_reveal_command_reveals_cell(self):
         self.ms._start()
         self.ms.update(Command(CmdType.REVEAL, 0, 0))
-        self.assertIn(self.ms.board.get(0, 0), [BoardState.MINE, BoardState.EMPTY] + range(1, 9))
+        self.assertIn(self.ms.board.get(0, 0),
+                [BoardState.MINE, BoardState.EMPTY] + list(range(1, 9)))
 
 
 class TestBoardState(TestCase):
@@ -176,7 +177,7 @@ class TestBoardState(TestCase):
         bs._mines = [(0, 0)]  # Single mine at origin
         bs.reveal_from(1, 1)
         self.assertEquals([[32, 32, 32],
-                           [32, 01, 32],
+                           [32, 1, 32],
                            [32, 32, 32]],
                           bs._rows)
 
@@ -184,18 +185,18 @@ class TestBoardState(TestCase):
         bs = self._create_boardstate(3, 3, 0)
         bs._mines = [(0, 0)]  # Single mine at origin
         bs.reveal_from(2, 2)
-        self.assertEquals([[32, 01, 00],
-                           [01, 01, 00],
-                           [00, 00, 00]],
+        self.assertEquals([[32, 1, 0],
+                           [1, 1, 0],
+                           [0, 0, 0]],
                           bs._rows)
 
     def test_reveal_from_away_and_partially_blocked_reveals_half_board(self):
         bs = self._create_boardstate(3, 4, 0)
         bs._mines = [(1, 0), (1, 1)]  # Two mines down middle
         bs.reveal_from(3, 1)
-        self.assertEquals([[32, 32, 02, 00],
-                           [32, 32, 02, 00],
-                           [32, 32, 01, 00]],
+        self.assertEquals([[32, 32, 2, 0],
+                           [32, 32, 2, 0],
+                           [32, 32, 1, 0]],
                           bs._rows)
 
     def test_set(self):

@@ -26,10 +26,10 @@ def map_key_to_command(key_code, x, y):
     if key_code in CmdKey.MOVEMENT_KEYS:
         return Command(CmdKey.MOVEMENT_KEYS[key_code], x, y)
 
-    elif key_code == CmdKey.REVEAL_KEY:
+    if key_code == CmdKey.REVEAL_KEY:
         return Command(CmdType.REVEAL, x, y)
 
-    elif key_code == CmdKey.TOGGLE_FLAG_KEY:
+    if key_code == CmdKey.TOGGLE_FLAG_KEY:
         return Command(CmdType.TOGGLE_FLAG, x, y)
 
     return Command(CmdType.NONE, x, y)
@@ -41,17 +41,17 @@ def main(difficulty=3, width=32, height=16, auto=False):
     minesweeper = MineSweeper(width, height, difficulty)
     ai = MineSweeperAI(minesweeper) if auto else None
     start_loop(minesweeper, map_cell_state_to_renderable, map_key_to_command, ai)
-    print 'Victories: %s\tDefeats: %s\t%% Wins: %.2f' % (minesweeper.num_victories,
+    print('Victories: %s\tDefeats: %s\t%% Wins: %.2f' % (minesweeper.num_victories,
                                                          minesweeper.num_defeats,
-                                                         minesweeper.fraction_wins * 100.0)
+                                                         minesweeper.fraction_wins * 100.0))
 
 
 def usage():
-    print 'Usage:\n\t%s [difficulty [width [height]]] [-h] [-d] [-a]\n' % sys.argv[0]
-    print 'Options:'
-    print '\t-h\t\tHelp\tDisplays this help message.'
-    print '\t-d\t\tDebug\tDisplays complete call stacks on errors.'
-    print '\t-a\t\tAuto\tEnables AI player.'
+    print('Usage:\n\t%s [difficulty [width [height]]] [-h] [-d] [-a]\n' % sys.argv[0])
+    print('Options:')
+    print('\t-h\t\tHelp\tDisplays this help message.')
+    print('\t-d\t\tDebug\tDisplays complete call stacks on errors.')
+    print('\t-a\t\tAuto\tEnables AI player.')
 
 
 if __name__ == '__main__':
@@ -74,5 +74,4 @@ if __name__ == '__main__':
             usage()
             if debug:
                 raise
-            else:
-                print e
+            print(e)
