@@ -8,15 +8,25 @@ from renderer import start_loop
 
 
 class CmdKey(object):
+    REVEAL_KEY = ord(' ')
+    TOGGLE_FLAG_KEY = ord('f')
+    QUIT_KEY = ord('q')
+    J_KEY = ord('j')
+    K_KEY = ord('k')
+    H_KEY = ord('h')
+    L_KEY = ord('l')
+
     MOVEMENT_KEYS = {
         KEY_DOWN: CmdType.DOWN,
         KEY_LEFT: CmdType.LEFT,
         KEY_RIGHT: CmdType.RIGHT,
-        KEY_UP: CmdType.UP
+        KEY_UP: CmdType.UP,
+
+        J_KEY: CmdType.DOWN,
+        K_KEY: CmdType.UP,
+        H_KEY: CmdType.LEFT,
+        L_KEY: CmdType.RIGHT
     }
-    REVEAL_KEY = ord(' ')
-    TOGGLE_FLAG_KEY = ord('f')
-    QUIT_KEY = ord('q')
 
 
 def map_key_to_command(key_code, x, y):
@@ -52,6 +62,12 @@ def usage():
     print('\t-h\t\tHelp\tDisplays this help message.')
     print('\t-d\t\tDebug\tDisplays complete call stacks on errors.')
     print('\t-a\t\tAuto\tEnables AI player.')
+    print('In game:')
+    print('\tUse the arrow keys to move.')
+    print('\tPress f to flag a mine under cursor.')
+    print('\tPress space to reveal from under the cursor.')
+    print('\tPress q to quit the game.')
+    print('There are no commands when AI player is enabled.')
 
 
 if __name__ == '__main__':

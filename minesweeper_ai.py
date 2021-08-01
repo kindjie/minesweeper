@@ -36,6 +36,8 @@ class MineSweeperAI(object):
             # Might need to guess if we aren't certain about a flag.
             return Command(CmdType.REVEAL, best_reveal_move.x, best_reveal_move.y)
 
+    __next__ = next
+
     def _moves(self, cells):
         for x, y in cells:
             risk = self._calc_risk(x, y)

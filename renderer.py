@@ -107,8 +107,8 @@ class GameBoardRenderer(object):
     def _put_center(self, text):
         max_lines, max_cols = self._game_window.getmaxyx()
         padded_text = self._pad_text(text)
-        x = max_cols / 2 - len(padded_text) / 2
-        y = max_lines / 2
+        x = max_cols // 2 - len(padded_text) // 2
+        y = max_lines // 2
         self._put(self._game_window, padded_text, x, y, curses.A_REVERSE | curses.A_BOLD)
 
     def is_in_board_bounds(self, x, y):
@@ -154,6 +154,7 @@ class GameBoardInputHandler(object):
         return self.transform(self.prev_input_code,
                               self.prev_cursor_coord[1] - GameBoardRenderer.BORDER_WIDTH,
                               self.prev_cursor_coord[0] - GameBoardRenderer.BORDER_WIDTH)
+    __next__ = next
 
 
 def start_loop(game, map_cell_to_renderable, map_key_to_command, ai):
