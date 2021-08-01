@@ -2,7 +2,7 @@ import curses
 import locale
 import re
 
-from ms.game import State
+from minesweeper.game import State
 
 
 class Window(object):

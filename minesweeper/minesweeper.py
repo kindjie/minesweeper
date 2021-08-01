@@ -5,7 +5,7 @@ from collections import deque
 from collections import namedtuple
 from random import sample
 
-from ms.game import State, BoardGameState
+from minesweeper.game import State, BoardGameState
 
 
 class MineSweeper(object):

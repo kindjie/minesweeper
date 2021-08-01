@@ -2,9 +2,9 @@
 import sys
 from _curses import KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP
 
-from ms.minesweeper import MineSweeper, map_cell_state_to_renderable, CmdType, Command
-from ms.minesweeper_ai import MineSweeperAI
-from ms.renderer import start_loop
+from minesweeper.minesweeper import MineSweeper, map_cell_state_to_renderable, CmdType, Command
+from minesweeper.minesweeper_ai import MineSweeperAI
+from minesweeper.renderer import start_loop
 
 
 class CmdKey(object):

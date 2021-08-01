@@ -22,6 +22,12 @@ In game:
   Press [q] to quit the game.
 
 There are no commands when AI player is enabled.
+
+Example:
+> pmine 35 50 50 -a
+
+  This will have the AI player attempt a 50x50 board densely packed
+  with mines.
 ```
 
 ![Title](./readme/title.png)

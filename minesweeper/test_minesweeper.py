@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from ms.game import State
-from ms.minesweeper import (MineSweeper, BoardState, Command, map_cell_state_to_renderable,
+from minesweeper.game import State
+from minesweeper.minesweeper import (MineSweeper, BoardState, Command, map_cell_state_to_renderable,
                          CmdType, Strings)
-from ms.minesweeper_cli import map_key_to_command, CmdKey
+from minesweeper.minesweeper_cli import map_key_to_command, CmdKey
 
 
 def assert_attributes_equal(test_case, obj_a, obj_b, attributes):
