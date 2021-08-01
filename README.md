@@ -6,7 +6,7 @@ UTF-8 and curses. Entry point is in minesweeper_cli.py. Use the `-h` option
 to print help.
 
 ```
-Usage: minesweeper_cli [difficulty [width [height]]] [-h] [-d] [-a]
+Usage: pmine [difficulty [width [height]]] [-h] [-d] [-a]
 
   difficulty  Integer between 0 and 40 inclusive.
   width       Integer greater than 1.
