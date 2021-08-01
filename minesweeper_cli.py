@@ -57,16 +57,20 @@ def main(difficulty=3, width=32, height=16, auto=False):
 
 
 def usage():
-    print('Usage:\n\t%s [difficulty [width [height]]] [-h] [-d] [-a]\n' % sys.argv[0])
+    print('Usage:')
+    print('    %s [difficulty [width [height]]] [-h] [-d] [-a]\n' % sys.argv[0])
+    print('     difficulty   Integer between 0 and 40 inclusive.')
+    print('     width        Integer greater than 1.')
+    print('     height       Integer greater than 1.\n')
     print('Options:')
-    print('\t-h\t\tHelp\tDisplays this help message.')
-    print('\t-d\t\tDebug\tDisplays complete call stacks on errors.')
-    print('\t-a\t\tAuto\tEnables AI player.')
+    print('    -h Help       Displays this help message.')
+    print('    -d Debug      Displays complete call stacks on errors.')
+    print('    -a Auto       Enables AI player.\n')
     print('In game:')
-    print('\tUse the arrow keys to move.')
-    print('\tPress f to flag a mine under cursor.')
-    print('\tPress space to reveal from under the cursor.')
-    print('\tPress q to quit the game.')
+    print('     Use the arrow keys or [hjkl] to move.')
+    print('     Press [f] to flag a mine under cursor.')
+    print('     Press [space] to reveal from under the cursor.')
+    print('     Press [q] to quit the game.\n')
     print('There are no commands when AI player is enabled.')
 
 
