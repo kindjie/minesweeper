@@ -30,7 +30,7 @@ Example:
   with mines.
 ```
 
-![Title](./readme/title.png)
-![Hidden Board](./readme/hidden_board.png)
-![Active Board](./readme/active_board.png)
-![Defeat](./readme/defeat.png)
+![Title](https://raw.githubusercontent.com/kindjie/minesweeper/main/readme/title.png)
+![Hidden Board](https://raw.githubusercontent.com/kindjie/minesweeper/main/readme/hidden_board.png)
+![Active Board](https://raw.githubusercontent.com/kindjie/minesweeper/main/readme/active_board.png)
+![Defeat](https://raw.githubusercontent.com/kindjie/minesweeper/main/readme/defeat.png)
