@@ -2,9 +2,9 @@
 import sys
 from _curses import KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP
 
-from minesweeper import MineSweeper, map_cell_state_to_renderable, CmdType, Command
-from minesweeper_ai import MineSweeperAI
-from renderer import start_loop
+from ms.minesweeper import MineSweeper, map_cell_state_to_renderable, CmdType, Command
+from ms.minesweeper_ai import MineSweeperAI
+from ms.renderer import start_loop
 
 
 class CmdKey(object):
@@ -74,7 +74,7 @@ def usage():
     print('There are no commands when AI player is enabled.')
 
 
-if __name__ == '__main__':
+def start():
     auto = '-a' in sys.argv
     debug = '-d' in sys.argv
     help = '-h' in sys.argv
@@ -95,3 +95,6 @@ if __name__ == '__main__':
             if debug:
                 raise
             print(e)
+
+if __name__ == '__main__':
+    start()

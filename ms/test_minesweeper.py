@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-import game
-from minesweeper import (MineSweeper, BoardState, Command, map_cell_state_to_renderable,
+from ms.game import State
+from ms.minesweeper import (MineSweeper, BoardState, Command, map_cell_state_to_renderable,
                          CmdType, Strings)
-from minesweeper_cli import map_key_to_command, CmdKey
+from ms.minesweeper_cli import map_key_to_command, CmdKey
 
 
 def assert_attributes_equal(test_case, obj_a, obj_b, attributes):
@@ -54,7 +54,7 @@ class TestMineSweeper(TestCase):
 
     def test_game_state_new_game_returns_starting(self):
         _, _, state = self.ms.game_state
-        self.assertEquals(game.State.STARTING, state)
+        self.assertEquals(State.STARTING, state)
 
     def test_reset_arbitrary_changes_resets_changed_attributes(self):
         arbitrary_game = self._create_arbitrary_game()
@@ -63,7 +63,7 @@ class TestMineSweeper(TestCase):
 
     def test_update_down_command_before_start_does_not_start_game(self):
         self.ms.update(Command(CmdType.DOWN, 0, 0))
-        self.assertEquals(((0, 1), game.State.STARTING),
+        self.assertEquals(((0, 1), State.STARTING),
                           (self.ms.cursor_pos, self.ms.game_state.state))
 
     def test_update_start_and_down_command_moves_cursor_down(self):

@@ -2,7 +2,7 @@ import curses
 import locale
 import re
 
-from game import State
+from ms.game import State
 
 
 class Window(object):

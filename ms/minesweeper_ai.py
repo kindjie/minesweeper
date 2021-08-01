@@ -1,7 +1,7 @@
 from collections import namedtuple
 import time
 
-from minesweeper import Command, CmdType, BoardState
+from ms.minesweeper import Command, CmdType, BoardState
 
 
 class MineSweeperAI(object):
